@@ -1,0 +1,55 @@
+class Vehicle {
+    String vehicleNo;
+
+    Vehicle(String vehicleNo) {
+        this.vehicleNo = vehicleNo;
+    }
+
+    double calculateFee(int hours) {
+        return hours * 20;
+    }
+
+    double calculateFee(double hours) {
+        return hours * 15;
+    }
+}
+
+class Car extends Vehicle {
+    Car(String vehicleNo) {
+        super(vehicleNo);
+    }
+
+    @Override
+    double calculateFee(int hours) {
+        return hours * 50;
+    }
+}
+
+class Bike extends Vehicle {
+    Bike(String vehicleNo) {
+        super(vehicleNo);
+    }
+
+    @Override
+    double calculateFee(int hours) {
+        return hours * 20;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Vehicle[] vehicles = {
+            new Car("TN01AB1234"),
+            new Bike("TN02CD5678")
+        };
+
+        for (Vehicle v : vehicles) {
+            System.out.println(v.vehicleNo + " Fee: " +
+                               v.calculateFee(2));
+        }
+
+        Vehicle v = new Vehicle("TN03EF9012");
+        System.out.println("Overloaded Fee: " +
+                           v.calculateFee(2.5));
+    }
+}
