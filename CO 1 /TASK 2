@@ -1,0 +1,34 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int floors = 3;
+        int slotsPerFloor = 5;
+
+        boolean[][] slots = new boolean[floors][slotsPerFloor];
+
+        System.out.print("Enter floor number (1-3): ");
+        int floor = sc.nextInt();
+
+        System.out.print("Enter slot number (1-5): ");
+        int slot = sc.nextInt();
+
+        if (floor >= 1 && floor <= floors &&
+            slot >= 1 && slot <= slotsPerFloor) {
+
+            if (!slots[floor - 1][slot - 1]) {
+                slots[floor - 1][slot - 1] = true;
+                System.out.println("Parking slot allocated successfully");
+            } else {
+                System.out.println("Slot is already occupied");
+            }
+
+        } else {
+            System.out.println("Invalid floor or slot number");
+        }
+
+        sc.close();
+    }
+}
