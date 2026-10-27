@@ -1,0 +1,73 @@
+import java.util.ArrayList;
+
+abstract class Vehicle {
+    String vehicleNo;
+
+    Vehicle(String vehicleNo) {
+        this.vehicleNo = vehicleNo;
+    }
+
+    abstract double calculateFee(int hours);
+}
+
+class Car extends Vehicle {
+    Car(String vehicleNo) {
+        super(vehicleNo);
+    }
+
+    double calculateFee(int hours) {
+        return hours * 50;
+    }
+}
+
+class Bike extends Vehicle {
+    Bike(String vehicleNo) {
+        super(vehicleNo);
+    }
+
+    double calculateFee(int hours) {
+        return hours * 20;
+    }
+}
+
+class ParkingSystem {
+    ArrayList<Vehicle> vehicles = new ArrayList<>();
+
+    void park(Vehicle v) {
+        for (Vehicle x : vehicles) {
+            if (x.vehicleNo.equals(v.vehicleNo)) {
+                System.out.println("Duplicate vehicle");
+                return;
+            }
+        }
+
+        vehicles.add(v);
+        System.out.println("Vehicle parked: " + v.vehicleNo);
+    }
+
+    void exit(String vehicleNo, int hours) {
+        for (Vehicle v : vehicles) {
+            if (v.vehicleNo.equals(vehicleNo)) {
+                System.out.println("Parking Fee: " + v.calculateFee(hours));
+                vehicles.remove(v);
+                return;
+            }
+        }
+
+        System.out.println("Vehicle not found");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ParkingSystem p = new ParkingSystem();
+
+        p.park(new Car("TN01AB1234"));
+        p.park(new Bike("TN02CD5678"));
+        p.park(new Car("TN01AB1234"));
+
+        p.exit("TN01AB1234", 2);
+        p.exit("TN02CD5678", 3);
+        p.exit("TN09XY1111", 1);
+    }
+}
