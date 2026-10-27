@@ -1,0 +1,35 @@
+class ParkingTicket {
+    int ticketNo;
+    String vehicleNo;
+    double fee;
+
+    ParkingTicket() {
+        this(0, "Unknown", 0.0);
+    }
+
+    ParkingTicket(int ticketNo, String vehicleNo) {
+        this(ticketNo, vehicleNo, 0.0);
+    }
+
+    ParkingTicket(int ticketNo, String vehicleNo, double fee) {
+        this.ticketNo = ticketNo;
+        this.vehicleNo = vehicleNo;
+        this.fee = fee;
+    }
+
+    void display() {
+        System.out.println(ticketNo + " " + vehicleNo + " " + fee);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ParkingTicket t1 = new ParkingTicket();
+        ParkingTicket t2 = new ParkingTicket(101, "TN01AB1234");
+        ParkingTicket t3 = new ParkingTicket(102, "TN02CD5678", 50.0);
+
+        t1.display();
+        t2.display();
+        t3.display();
+    }
+}
