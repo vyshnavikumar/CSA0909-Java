@@ -1,0 +1,34 @@
+class ParkingTicket {
+    static int ticketCounter = 100;
+    int ticketNo;
+    String vehicleNo;
+
+    ParkingTicket(String vehicleNo) {
+        ticketCounter++;
+        this.ticketNo = ticketCounter;
+        this.vehicleNo = vehicleNo;
+    }
+
+    static void showCounter() {
+        System.out.println("Total Tickets: " + ticketCounter);
+    }
+
+    void display() {
+        System.out.println(ticketNo + " " + vehicleNo);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ParkingTicket t1 = new ParkingTicket("TN01AB1234");
+        ParkingTicket t2 = new ParkingTicket("TN02CD5678");
+
+        t1.display();
+        t2.display();
+
+        ParkingTicket.showCounter();
+
+        t1 = null;
+        t2 = null;
+    }
+}
