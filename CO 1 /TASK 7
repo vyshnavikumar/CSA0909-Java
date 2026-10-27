@@ -1,0 +1,47 @@
+class Vehicle {
+    String vehicleNo;
+
+    Vehicle(String vehicleNo) {
+        this.vehicleNo = vehicleNo;
+    }
+
+    double calculateFee() {
+        return 50;
+    }
+
+    public String toString() {
+        return vehicleNo;
+    }
+}
+
+class Car extends Vehicle {
+    Car(String vehicleNo) {
+        super(vehicleNo);
+    }
+
+    @Override
+    double calculateFee() {
+        return 100;
+    }
+}
+
+class Bike extends Vehicle {
+    Bike(String vehicleNo) {
+        super(vehicleNo);
+    }
+
+    @Override
+    double calculateFee() {
+        return 30;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Vehicle v1 = new Car("TN01AB1234");
+        Vehicle v2 = new Bike("TN02CD5678");
+
+        System.out.println(v1 + " Fee: " + v1.calculateFee());
+        System.out.println(v2 + " Fee: " + v2.calculateFee());
+    }
+}
