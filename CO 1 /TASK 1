@@ -1,0 +1,46 @@
+class Vehicle {
+    String vehicleNumber;
+    String vehicleType;
+    long entryTime;
+
+    Vehicle(String number, String type, long time) {
+        vehicleNumber = number;
+        vehicleType = type;
+        entryTime = time;
+    }
+
+    void displayVehicle() {
+        System.out.println("Vehicle Number: " + vehicleNumber);
+        System.out.println("Vehicle Type: " + vehicleType);
+        System.out.println("Entry Time: " + entryTime);
+    }
+}
+
+class ParkingSlot {
+    int slotNumber;
+    boolean isOccupied;
+
+    ParkingSlot(int number) {
+        slotNumber = number;
+        isOccupied = false;
+    }
+
+    void parkVehicle() {
+        if (!isOccupied) {
+            isOccupied = true;
+            System.out.println("Vehicle Parked Successfully");
+        } else {
+            System.out.println("Slot is Already Occupied");
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Vehicle v1 = new Vehicle("TN01AB1234", "Car", 1000);
+        ParkingSlot s1 = new ParkingSlot(1);
+
+        v1.displayVehicle();
+        s1.parkVehicle();
+    }
+}
