@@ -1,0 +1,78 @@
+abstract class Vehicle {
+    String vehicleNo;
+
+    Vehicle(String vehicleNo) {
+        this.vehicleNo = vehicleNo;
+    }
+
+    abstract double calculateFee(int hours);
+}
+
+class Car extends Vehicle {
+    Car(String no) {
+        super(no);
+    }
+
+    double calculateFee(int hours) {
+        return hours * 50;
+    }
+}
+
+class Bike extends Vehicle {
+    Bike(String no) {
+        super(no);
+    }
+
+    double calculateFee(int hours) {
+        return hours * 20;
+    }
+}
+
+class ElectricBike extends Vehicle {
+    ElectricBike(String no) {
+        super(no);
+    }
+
+    double calculateFee(int hours) {
+        return 30;
+    }
+}
+
+class DeliveryVan extends Vehicle {
+    DeliveryVan(String no) {
+        super(no);
+    }
+
+    double calculateFee(int hours) {
+        return hours * 100;
+    }
+}
+
+interface DayPass {
+    double getPassFee();
+}
+
+class VisitorPass implements DayPass {
+    public double getPassFee() {
+        return 100;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Vehicle[] vehicles = {
+            new Car("TN01AB1234"),
+            new Bike("TN02CD5678"),
+            new ElectricBike("TN03EF9012"),
+            new DeliveryVan("TN04GH3456")
+        };
+
+        for (Vehicle v : vehicles) {
+            System.out.println(
+                v.vehicleNo + " Fee: " + v.calculateFee(2));
+        }
+
+        VisitorPass pass = new VisitorPass();
+        System.out.println("Visitor Day Pass: " + pass.getPassFee());
+    }
+}
