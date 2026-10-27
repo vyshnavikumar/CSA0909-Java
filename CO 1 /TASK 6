@@ -1,0 +1,33 @@
+class Vehicle {
+    String vehicleNo;
+
+    Vehicle(String vehicleNo) {
+        this.vehicleNo = vehicleNo;
+        System.out.println("Vehicle constructor");
+    }
+
+    void display() {
+        System.out.println("Vehicle Number: " + vehicleNo);
+    }
+}
+
+class Car extends Vehicle {
+    Car(String vehicleNo) {
+        super(vehicleNo);
+        System.out.println("Car constructor");
+    }
+}
+
+class ElectricCar extends Car {
+    ElectricCar(String vehicleNo) {
+        super(vehicleNo);
+        System.out.println("ElectricCar constructor");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ElectricCar e = new ElectricCar("TN01AB1234");
+        e.display();
+    }
+}
