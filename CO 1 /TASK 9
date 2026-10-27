@@ -1,0 +1,68 @@
+abstract class Vehicle {
+    String vehicleNo;
+
+    Vehicle(String vehicleNo) {
+        this.vehicleNo = vehicleNo;
+    }
+
+    abstract double calculateFee(int hours);
+
+    void display() {
+        System.out.println("Vehicle Number: " + vehicleNo);
+    }
+}
+
+interface Chargeable {
+    void chargeBattery();
+
+    default void showChargingStatus() {
+        System.out.println("Vehicle supports charging");
+    }
+
+    static void info() {
+        System.out.println("Charging facility available");
+    }
+}
+
+class Car extends Vehicle {
+    Car(String vehicleNo) {
+        super(vehicleNo);
+    }
+
+    double calculateFee(int hours) {
+        return hours * 50;
+    }
+}
+
+class ElectricCar extends Vehicle implements Chargeable {
+    ElectricCar(String vehicleNo) {
+        super(vehicleNo);
+    }
+
+    double calculateFee(int hours) {
+        return hours * 30;
+    }
+
+    public void chargeBattery() {
+        System.out.println("Electric car is charging");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Vehicle v1 = new Car("TN01AB1234");
+        Vehicle v2 = new ElectricCar("TN02CD5678");
+
+        v1.display();
+        System.out.println("Fee: " + v1.calculateFee(2));
+
+        v2.display();
+        System.out.println("Fee: " + v2.calculateFee(2));
+
+        ElectricCar e = new ElectricCar("TN03EF9012");
+        e.chargeBattery();
+        e.showChargingStatus();
+
+        Chargeable.info();
+    }
+}
