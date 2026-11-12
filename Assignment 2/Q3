@@ -1,0 +1,138 @@
+
+import java.util.*;
+
+class Student {
+    private final String regNo;
+    private final String name;
+
+    Student(String regNo, String name) {
+        this.regNo = regNo;
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+
+        if (!(o instanceof Student))
+            return false;
+
+        Student s = (Student) o;
+        return regNo.equals(s.regNo);
+    }
+
+    // TODO 1: Correct hashCode()
+    @Override
+    public int hashCode() {
+        return Objects.hash(regNo);
+    }
+
+    @Override
+    public String toString() {
+        return regNo + " " + name;
+    }
+}
+
+// Incorrect Student class for comparison
+class BrokenStudent {
+    String regNo;
+    String name;
+
+    BrokenStudent(String regNo, String name) {
+        this.regNo = regNo;
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof BrokenStudent))
+            return false;
+
+        BrokenStudent s = (BrokenStudent) o;
+        return regNo.equals(s.regNo);
+    }
+
+    // hashCode() is not overridden
+}
+
+public class Attendance {
+
+    public static void main(String[] args) {
+
+        System.out.println("==================================");
+        System.out.println("TEST 1: INCORRECT CLASS");
+        System.out.println("==================================");
+
+        Set<BrokenStudent> test1 = new HashSet<>();
+
+        test1.add(new BrokenStudent("101", "Arun"));
+        test1.add(new BrokenStudent("102", "Divya"));
+        test1.add(new BrokenStudent("101", "Arun"));
+
+        System.out.println("Set size: " + test1.size());
+        System.out.println("Expected: Usually 3, because hashCode is not overridden.");
+
+        System.out.println("\n==================================");
+        System.out.println("TEST 2: CORRECT STUDENT CLASS");
+        System.out.println("==================================");
+
+        Set<Student> test2 = new HashSet<>();
+
+        test2.add(new Student("101", "Arun"));
+        test2.add(new Student("102", "Divya"));
+        test2.add(new Student("101", "Arun"));
+
+        System.out.println("Unique students: " + test2.size());
+        System.out.println("Students: " + test2);
+
+        System.out.println("\n==================================");
+        System.out.println("TEST 3: DUPLICATE WITH DIFFERENT NAME");
+        System.out.println("==================================");
+
+        Set<Student> test3 = new HashSet<>();
+
+        test3.add(new Student("103", "Ravi"));
+        test3.add(new Student("104", "Priya"));
+        test3.add(new Student("103", "Ravi Kumar"));
+
+        System.out.println("Unique students: " + test3.size());
+        System.out.println("Students: " + test3);
+
+        System.out.println("\n==================================");
+        System.out.println("TEST 4: HASHMAP ALTERNATIVE");
+        System.out.println("==================================");
+
+        Map<String, Student> attendanceMap = new HashMap<>();
+
+        attendanceMap.put("101", new Student("101", "Arun"));
+        attendanceMap.put("102", new Student("102", "Divya"));
+        attendanceMap.put("101", new Student("101", "Arun"));
+
+        System.out.println("Unique students: " + attendanceMap.size());
+        System.out.println("Students: " + attendanceMap.values());
+
+        System.out.println("\n==================================");
+        System.out.println("TEST 5: TREESET ALTERNATIVE");
+        System.out.println("==================================");
+
+        Set<Student> treeSet = new TreeSet<>(
+            Comparator.comparing(s -> getRegNo(s))
+        );
+
+        treeSet.add(new Student("101", "Arun"));
+        treeSet.add(new Student("102", "Divya"));
+        treeSet.add(new Student("101", "Arun"));
+
+        System.out.println("Unique students: " + treeSet.size());
+        System.out.println("Students: " + treeSet);
+
+        System.out.println("\n==================================");
+        System.out.println("ALL TESTS COMPLETED");
+        System.out.println("==================================");
+    }
+
+    static String getRegNo(Student s) {
+        return s.toString().split(" ")[0];
+    }
+}
