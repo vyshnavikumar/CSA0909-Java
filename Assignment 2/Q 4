@@ -1,0 +1,74 @@
+
+import java.util.*;
+
+public class PharmacyInventory {
+
+    public static void main(String[] args) {
+
+        HashMap<Integer, String> hashMap = new HashMap<>();
+        TreeMap<Integer, String> treeMap = new TreeMap<>();
+        LinkedHashMap<Integer, String> linkedMap =
+                new LinkedHashMap<>();
+
+        int[] codes = {105, 102, 104, 101, 103};
+
+        String[] medicines = {
+            "Paracetamol",
+            "Aspirin",
+            "Cetirizine",
+            "Amoxicillin",
+            "Ibuprofen"
+        };
+
+        // Adding medicines
+        for (int i = 0; i < codes.length; i++) {
+            hashMap.put(codes[i], medicines[i]);
+            treeMap.put(codes[i], medicines[i]);
+            linkedMap.put(codes[i], medicines[i]);
+        }
+
+        // Medicine lookup
+        System.out.println("MEDICINE LOOKUP");
+        System.out.println("Code 104: " + hashMap.get(104));
+
+        // Code order report
+        System.out.println("\nCODE ORDER REPORT");
+
+        for (Map.Entry<Integer, String> entry :
+                treeMap.entrySet()) {
+
+            System.out.println(
+                entry.getKey() + " - " + entry.getValue()
+            );
+        }
+
+        // Insertion order report
+        System.out.println("\nINSERTION ORDER REPORT");
+
+        for (Map.Entry<Integer, String> entry :
+                linkedMap.entrySet()) {
+
+            System.out.println(
+                entry.getKey() + " - " + entry.getValue()
+            );
+        }
+
+        // Checking medicine availability
+        System.out.println("\nMEDICINE AVAILABLE: "
+                + hashMap.containsKey(102));
+
+        // Performance testing
+        int lookups = 100000;
+
+        long start = System.nanoTime();
+
+        for (int i = 0; i < lookups; i++) {
+            hashMap.get(codes[i % codes.length]);
+        }
+
+        long end = System.nanoTime();
+
+        System.out.println("\n100000 LOOKUPS TIME: "
+                + (end - start) / 1000000.0 + " ms");
+    }
+}
