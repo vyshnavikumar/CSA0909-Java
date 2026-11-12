@@ -1,0 +1,64 @@
+import java.util.*;
+            return () -> {
+                long sum = 0;
+                for (int i = 0; i < 1000; i++)
+                    sum += list.get(k);
+                result = sum;
+            };
+        }));
+
+        System.out.println("LinkedList: " + averageTime(() -> {
+            LinkedList<Integer> list = createLinkedList(n);
+            return () -> {
+                long sum = 0;
+                for (int i = 0; i < 1000; i++)
+                    sum += list.get(k);
+                result = sum;
+            };
+        }));
+
+        System.out.println("ArrayDeque: No direct index access");
+
+        System.out.println("\n7. ITERATE THROUGH WHOLE LIST");
+
+        System.out.println("ArrayList: " + averageTime(() -> {
+            ArrayList<Integer> list = createArrayList(n);
+            return () -> {
+                long sum = 0;
+                for (int x : list)
+                    sum += x;
+                result = sum;
+            };
+        }));
+
+        System.out.println("LinkedList: " + averageTime(() -> {
+            LinkedList<Integer> list = createLinkedList(n);
+            return () -> {
+                long sum = 0;
+                for (int x : list)
+                    sum += x;
+                result = sum;
+            };
+        }));
+
+        System.out.println("ArrayDeque: " + averageTime(() -> {
+            ArrayDeque<Integer> deque = createArrayDeque(n);
+            return () -> {
+                long sum = 0;
+                for (int x : deque)
+                    sum += x;
+                result = sum;
+            };
+        }));
+    }
+
+    public static void main(String[] args) {
+        int[] sizes = {1000, 5000, 10000};
+
+        for (int size : sizes) {
+            test(size);
+        }
+
+        System.out.println("\nExperiment completed successfully.");
+    }
+}
