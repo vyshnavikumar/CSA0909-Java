@@ -1,0 +1,146 @@
+
+public class Q1 {
+
+    static volatile long result;
+
+    // Using String
+    static String usingString(String[] fields) {
+        String ticket = "";
+
+        for (String field : fields) {
+            ticket = ticket + field;
+        }
+
+        return ticket;
+    }
+
+    // Using StringBuilder
+    static String usingStringBuilder(String[] fields) {
+        StringBuilder ticket = new StringBuilder();
+
+        for (String field : fields) {
+            ticket.append(field);
+        }
+
+        return ticket.toString();
+    }
+
+    // Using StringBuffer
+    static String usingStringBuffer(String[] fields) {
+        StringBuffer ticket = new StringBuffer();
+
+        for (String field : fields) {
+            ticket.append(field);
+        }
+
+        return ticket.toString();
+    }
+
+    // Measure execution time
+    static void measure(String method, int tickets,
+                        int fieldCount, int runs) {
+
+        String[][] data = new String[tickets][fieldCount];
+
+        for (int i = 0; i < tickets; i++) {
+            for (int j = 0; j < fieldCount; j++) {
+                data[i][j] = "Field" + j + " ";
+            }
+        }
+
+        long totalTime = 0;
+
+        // Warm-up
+        for (int i = 0; i < 3; i++) {
+            execute(method, data);
+        }
+
+        // Repeated measurements
+        for (int i = 0; i < runs; i++) {
+
+            long start = System.nanoTime();
+
+            execute(method, data);
+
+            long end = System.nanoTime();
+
+            totalTime += (end - start);
+        }
+
+        double average =
+            totalTime / (double) runs / 1000000.0;
+
+        System.out.printf("%-18s %.3f ms%n",
+                          method, average);
+    }
+
+    static void execute(String method, String[][] data) {
+
+        long totalLength = 0;
+
+        for (String[] fields : data) {
+
+            String ticket;
+
+            if (method.equals("String")) {
+                ticket = usingString(fields);
+            }
+            else if (method.equals("StringBuilder")) {
+                ticket = usingStringBuilder(fields);
+            }
+            else {
+                ticket = usingStringBuffer(fields);
+            }
+
+            totalLength += ticket.length();
+        }
+
+        result = totalLength;
+    }
+
+    // Run three different workloads
+    static void workload(int tickets, int fields) {
+
+        System.out.println("\n------------------------------");
+        System.out.println("Tickets: " + tickets);
+        System.out.println("Fields per ticket: " + fields);
+        System.out.println("------------------------------");
+
+        measure("String", tickets, fields, 7);
+
+        measure("StringBuilder", tickets, fields, 7);
+
+        measure("StringBuffer", tickets, fields, 7);
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println("RAILWAY E-TICKET GENERATION");
+        System.out.println("Performance Comparison");
+
+        // Workload 1: Small
+        workload(1, 6);
+
+        // Workload 2: Large
+        workload(10000, 50);
+
+        // Workload 3: Additional
+        workload(2000, 200);
+
+        // Sample ticket
+        System.out.println("\nSAMPLE RAILWAY TICKET");
+
+        String[] ticketFields = {
+            "PNR: 1234567890\n",
+            "Passenger: Vyshnavi\n",
+            "Coach: S1\n",
+            "Berth: 21\n",
+            "Fare: Rs.450\n",
+            "Journey: Hyderabad to Chennai\n"
+        };
+
+        System.out.println(usingStringBuilder(ticketFields));
+
+        System.out.println("Execution completed.");
+    }
+}
