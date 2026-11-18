@@ -1,0 +1,82 @@
+
+import java.io.*;
+
+public class Main {
+
+    // Create input file automatically
+    static void createFile() {
+
+        try (PrintWriter pw = new PrintWriter("sales.txt")) {
+
+            pw.println("Store 1 - 5000");
+            pw.println("Store 2 - 7000");
+            pw.println("Store 3 - 6000");
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    // Manual resource handling
+    static void manualVersion() {
+
+        BufferedReader reader = null;
+
+        try {
+            reader = new BufferedReader(
+                new FileReader("sales.txt"));
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+        } catch (IOException e) {
+            System.out.println("Manual Error: " + e.getMessage());
+
+        } finally {
+
+            try {
+                if (reader != null) {
+                    reader.close();
+                    System.out.println("Manual file closed");
+                }
+            } catch (IOException e) {
+                System.out.println("Closing failed");
+            }
+        }
+    }
+
+    // Automatic resource handling
+    static void automaticVersion() {
+
+        try (BufferedReader reader =
+                new BufferedReader(
+                    new FileReader("sales.txt"))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+        } catch (IOException e) {
+            System.out.println("Automatic Error: " +
+                e.getMessage());
+        }
+
+        System.out.println("Try-with-resources completed");
+    }
+
+    public static void main(String[] args) {
+
+        createFile();
+
+        System.out.println("MANUAL VERSION");
+        manualVersion();
+
+        System.out.println("\nTRY-WITH-RESOURCES VERSION");
+        automaticVersion();
+    }
+}
