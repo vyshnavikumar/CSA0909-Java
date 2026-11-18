@@ -1,0 +1,139 @@
+
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+class Result {
+    int fileNumber;
+    String status;
+
+    Result(int fileNumber, String status) {
+        this.fileNumber = fileNumber;
+        this.status = status;
+    }
+}
+
+class FileProcessor implements Callable<Result> {
+
+    int fileNumber;
+
+    FileProcessor(int fileNumber) {
+        this.fileNumber = fileNumber;
+    }
+
+    public Result call() {
+
+        String fileName = "file" + fileNumber + ".txt";
+
+        try (BufferedReader reader =
+                new BufferedReader(new FileReader(fileName))) {
+
+            String line;
+            int count = 0;
+
+            while ((line = reader.readLine()) != null) {
+                count++;
+            }
+
+            return new Result(fileNumber,
+                    "SUCCESS - " + count + " lines");
+
+        } catch (FileNotFoundException e) {
+
+            return new Result(fileNumber, "FILE MISSING");
+
+        } catch (IOException e) {
+
+            return new Result(fileNumber, "FILE ERROR");
+        }
+    }
+}
+
+public class Main {
+
+    static void createFiles() {
+
+        for (int i = 1; i <= 10000; i++) {
+
+            // Create missing files at every 1000th position
+            if (i % 1000 == 0) {
+                continue;
+            }
+
+            try (PrintWriter writer =
+                    new PrintWriter("file" + i + ".txt")) {
+
+                writer.println("Student File " + i);
+                writer.println("Java Assignment");
+                writer.println("File Processing");
+
+            } catch (IOException e) {
+                System.out.println("Error creating file " + i);
+            }
+        }
+    }
+
+    static void processFiles(int poolSize)
+            throws InterruptedException, ExecutionException {
+
+        ExecutorService executor =
+                Executors.newFixedThreadPool(poolSize);
+
+        List<Future<Result>> futures = new ArrayList<>();
+
+        long startTime = System.currentTimeMillis();
+
+        for (int i = 1; i <= 10000; i++) {
+
+            FileProcessor task = new FileProcessor(i);
+
+            Future<Result> future = executor.submit(task);
+
+            futures.add(future);
+        }
+
+        int success = 0;
+        int failure = 0;
+
+        for (Future<Result> future : futures) {
+
+            Result result = future.get();
+
+            if (result.status.startsWith("SUCCESS")) {
+                success++;
+            } else {
+                failure++;
+            }
+        }
+
+        executor.shutdown();
+
+        long endTime = System.currentTimeMillis();
+
+        System.out.println("Thread Pool Size: " + poolSize);
+        System.out.println("Successful Files: " + success);
+        System.out.println("Failed Files: " + failure);
+        System.out.println("Execution Time: "
+                + (endTime - startTime) + " ms");
+
+        System.out.println("--------------------------");
+    }
+
+    public static void main(String[] args)
+            throws Exception {
+
+        System.out.println("CREATING 10000 FILES");
+
+        createFiles();
+
+        System.out.println("FILE CREATION COMPLETED");
+        System.out.println();
+
+        processFiles(1);
+        processFiles(2);
+        processFiles(4);
+        processFiles(8);
+
+        System.out.println("ALL FILES PROCESSED");
+    }
+}
