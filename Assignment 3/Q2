@@ -1,0 +1,112 @@
+
+import java.io.IOException;
+
+class ExamException extends Exception {
+    ExamException(String message) {
+        super(message);
+    }
+
+    ExamException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+
+class ExamClosedException extends ExamException {
+    ExamClosedException(String msg) {
+        super(msg);
+    }
+}
+
+class StudentNotRegisteredException extends ExamException {
+    StudentNotRegisteredException(String msg) {
+        super(msg);
+    }
+}
+
+class SubmissionStorageException extends ExamException {
+    SubmissionStorageException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+}
+
+class ExamService {
+
+    void checkExam(boolean open) throws ExamClosedException {
+        if (!open)
+            throw new ExamClosedException("Exam window is closed");
+    }
+
+    void checkRegistration(boolean registered)
+            throws StudentNotRegisteredException {
+        if (!registered)
+            throw new StudentNotRegisteredException(
+                "Student is not registered");
+    }
+}
+
+class Storage {
+
+    void save(int size) throws SubmissionStorageException {
+
+        try {
+            if (size > 500)
+                throw new IOException("Disk quota exceeded");
+
+            System.out.println("Submission saved successfully");
+
+        } catch (IOException e) {
+            throw new SubmissionStorageException(
+                "Could not store answer file", e);
+        }
+    }
+}
+
+public class ExamPortalStudentB {
+
+    public static void main(String[] args) {
+
+        ExamService service = new ExamService();
+        Storage storage = new Storage();
+
+        System.out.println("TEST 1");
+
+        try {
+            service.checkExam(false);
+        } catch (ExamException e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("\nTEST 2");
+
+        try {
+            service.checkRegistration(false);
+        } catch (ExamException e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("\nTEST 3");
+
+        try {
+            storage.save(800);
+        } catch (ExamException e) {
+
+            System.out.println("Error: " + e.getMessage());
+
+            System.out.println("Cause: " +
+                e.getCause().getMessage());
+
+            System.out.println("\nFull stack trace:");
+            e.printStackTrace();
+        }
+
+        System.out.println("\nTEST 4 - Without chaining");
+
+        try {
+            throw new ExamException("Storage failed");
+        } catch (ExamException e) {
+
+            System.out.println("Error: " + e.getMessage());
+            System.out.println("Cause: " + e.getCause());
+        }
+    }
+}
