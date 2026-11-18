@@ -1,0 +1,73 @@
+
+class Account {
+
+    int id;
+    int balance = 1000;
+
+    Account(int id) {
+        this.id = id;
+    }
+
+    // Unsafe transfer - may cause deadlock
+    static void unsafeTransfer(Account a, Account b) {
+
+        synchronized (a) {
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+
+            synchronized (b) {
+                a.balance -= 100;
+                b.balance += 100;
+            }
+        }
+    }
+
+    // Safe transfer - locks accounts in ID order
+    static void safeTransfer(Account a, Account b) {
+
+        Account first = a.id < b.id ? a : b;
+        Account second = a.id < b.id ? b : a;
+
+        synchronized (first) {
+            synchronized (second) {
+
+                a.balance -= 100;
+                b.balance += 100;
+            }
+        }
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args)
+            throws InterruptedException {
+
+        Account a1 = new Account(1);
+        Account a2 = new Account(2);
+
+        System.out.println("SAFE TRANSFER");
+
+        Thread t1 = new Thread(() ->
+                Account.safeTransfer(a1, a2));
+
+        Thread t2 = new Thread(() ->
+                Account.safeTransfer(a2, a1));
+
+        t1.start();
+        t2.start();
+
+        t1.join();
+        t2.join();
+
+        System.out.println("Account 1 Balance: " + a1.balance);
+        System.out.println("Account 2 Balance: " + a2.balance);
+
+        System.out.println("Safe transfer completed");
+    }
+}
