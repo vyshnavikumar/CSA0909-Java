@@ -1,0 +1,55 @@
+mport java.util.Scanner;
+                        System.out.println("\nNext Page:");
+                        displayBooks(titles, categories, currentPage, pageSize);
+                    }
+                    break;
+
+                case 3:
+                    if (currentPage > 0) {
+                        currentPage--;
+                        System.out.println("\nPrevious Page:");
+                        displayBooks(titles, categories, currentPage, pageSize);
+                    } else {
+                        System.out.println("You are already on the first page!");
+                    }
+                    break;
+
+                case 4:
+                    System.out.print("Enter Book ID to reserve: ");
+                    int bookId = sc.nextInt();
+
+                    if (bookId >= 1 && bookId <= titles.length) {
+                        System.out.println("Book Reserved Successfully!");
+                        System.out.println("Reserved Book: " + titles[bookId - 1]);
+                    } else {
+                        System.out.println("Invalid Book ID!");
+                    }
+                    break;
+
+                case 5:
+                    running = false;
+                    System.out.println("Thank you for using Library Search System!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice! Try again.");
+            }
+        }
+
+        sc.close();
+    }
+
+    public static void displayBooks(String[] titles, String[] categories,
+                                    int page, int pageSize) {
+
+        int start = page * pageSize;
+        int end = Math.min(start + pageSize, titles.length);
+
+        for (int i = start; i < end; i++) {
+            System.out.println("Book ID: " + (i + 1));
+            System.out.println("Title: " + titles[i]);
+            System.out.println("Category: " + categories[i]);
+            System.out.println("----------------------");
+        }
+    }
+}
