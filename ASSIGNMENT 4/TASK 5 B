@@ -1,0 +1,217 @@
+
+import java.util.*;
+
+class Registration {
+    String name, roll, email, event;
+
+    Registration(String name, String roll,
+                 String email, String event) {
+        this.name = name;
+        this.roll = roll;
+        this.email = email;
+        this.event = event;
+    }
+}
+
+public class Main {
+
+    static ArrayList<Registration> students =
+        new ArrayList<>();
+
+    static Scanner sc = new Scanner(System.in);
+
+    static String[] events = {
+        "Cultural Fest",
+        "Dance Competition",
+        "Singing Competition",
+        "Technical Fest",
+        "Sports Event"
+    };
+
+    static void registerStudent() {
+
+        System.out.print("Enter Student Name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter Roll Number: ");
+        String roll = sc.nextLine();
+
+        System.out.print("Enter Email: ");
+        String email = sc.nextLine();
+
+        System.out.println("Select Event:");
+
+        for (int i = 0; i < events.length; i++) {
+            System.out.println((i + 1) + ". " + events[i]);
+        }
+
+        int choice;
+
+        try {
+            choice = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid event choice!");
+            return;
+        }
+
+        if (name.trim().isEmpty() ||
+            roll.trim().isEmpty() ||
+            email.trim().isEmpty()) {
+            System.out.println("All fields are required!");
+            return;
+        }
+
+        if (!name.matches("[a-zA-Z ]+")) {
+            System.out.println("Invalid student name!");
+            return;
+        }
+
+        if (!email.matches(
+            "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            System.out.println("Invalid email!");
+            return;
+        }
+
+        if (choice < 1 || choice > events.length) {
+            System.out.println("Invalid event selection!");
+            return;
+        }
+
+        String event = events[choice - 1];
+
+        for (Registration r : students) {
+            if (r.roll.equalsIgnoreCase(roll.trim()) &&
+                r.event.equals(event)) {
+                System.out.println(
+                    "Duplicate registration not allowed!");
+                return;
+            }
+        }
+
+        students.add(new Registration(
+            name.trim(), roll.trim(), email.trim(), event));
+
+        System.out.println(
+            "Registration Successful!");
+
+    }
+
+    static void displayStudents() {
+
+        if (students.isEmpty()) {
+            System.out.println("No registrations found.");
+            return;
+        }
+
+        int pageSize = 2;
+        int totalPages =
+            (students.size() + pageSize - 1) / pageSize;
+
+        System.out.println("Total Pages: " + totalPages);
+
+        for (int page = 0; page < totalPages; page++) {
+
+            System.out.println("\nPage " + (page + 1));
+
+            int start = page * pageSize;
+            int end = Math.min(start + pageSize,
+                               students.size());
+
+            for (int i = start; i < end; i++) {
+                Registration r = students.get(i);
+
+                System.out.println(
+                    "Name: " + r.name +
+                    " | Roll: " + r.roll +
+                    " | Email: " + r.email +
+                    " | Event: " + r.event);
+            }
+        }
+    }
+
+    static void filterStudents() {
+
+        System.out.print("Enter Event Name: ");
+        String event = sc.nextLine();
+
+        boolean found = false;
+
+        for (Registration r : students) {
+            if (r.event.equalsIgnoreCase(event.trim())) {
+
+                System.out.println(
+                    r.name + " | " + r.roll +
+                    " | " + r.email + " | " + r.event);
+
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No matching registrations!");
+        }
+    }
+
+    static void exportStudents() {
+
+        System.out.println("\nCSV OUTPUT:");
+        System.out.println(
+            "Name,Roll Number,Email,Event");
+
+        for (Registration r : students) {
+            System.out.println(
+                r.name + "," + r.roll + "," +
+                r.email + "," + r.event);
+        }
+    }
+
+    public static void main(String[] args) {
+
+        while (true) {
+
+            System.out.println("\n===== CAMPUS EVENT REGISTRATION =====");
+            System.out.println("1. Register Student");
+            System.out.println("2. View Registrations");
+            System.out.println("3. Filter by Event");
+            System.out.println("4. Export CSV Output");
+            System.out.println("5. Exit");
+
+            System.out.print("Enter Choice: ");
+
+            int choice;
+
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Enter a valid number!");
+                continue;
+            }
+
+            switch (choice) {
+
+                case 1:
+                    registerStudent();
+                    break;
+
+                case 2:
+                    displayStudents();
+                    break;
+
+                case 3:
+                    filterStudents();
+                    break;
+
+                case 4:
+                    exportStudents();
+                    break;
+
+                case 5:
+                    System.out.println("Thank You!");
+                    return;
+
+                default:
+                    System.out.println("Invalid Choice!");
+            }
+        }
+    }
+}
