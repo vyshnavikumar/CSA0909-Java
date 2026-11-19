@@ -1,0 +1,38 @@
+import java.util.Scanner;
+
+class FeeService {
+    public void pay(String regNo, double amount) {
+        if (regNo.isEmpty()) {
+            System.out.println("Enter Registration Number!");
+        } else if (amount <= 0) {
+            System.out.println("Invalid Amount!");
+        } else {
+            System.out.println("Payment Successful!");
+            System.out.println("Registration Number: " + regNo);
+            System.out.println("Amount: Rs. " + amount);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        FeeService service = new FeeService();
+
+        System.out.println("STUDENT FEE PAYMENT");
+
+        System.out.print("Enter Registration Number: ");
+        String regNo = sc.nextLine();
+
+        System.out.print("Enter Amount: ");
+
+        if (sc.hasNextDouble()) {
+            double amount = sc.nextDouble();
+            service.pay(regNo, amount);
+        } else {
+            System.out.println("Please enter a valid amount!");
+        }
+
+        sc.close();
+    }
+}
