@@ -1,0 +1,284 @@
+
+import java.util.*;
+
+class WorkItem {
+
+    int id;
+    int priority;
+    boolean critical;
+    boolean completed;
+
+    WorkItem(int id, int priority, boolean critical) {
+        this.id = id;
+        this.priority = priority;
+        this.critical = critical;
+        this.completed = false;
+    }
+}
+
+class DeviceState {
+
+    boolean batteryGood;
+    boolean networkAvailable;
+    boolean permissionGranted;
+
+    DeviceState(boolean battery, boolean network,
+                boolean permission) {
+
+        batteryGood = battery;
+        networkAvailable = network;
+        permissionGranted = permission;
+    }
+}
+
+public class Main {
+
+    static int enqueued = 0;
+    static int deferred = 0;
+    static int cancelled = 0;
+    static int successful = 0;
+    static int maxConcurrent = 0;
+
+    static int activeWorkers = 0;
+
+    static List<WorkItem> backlog = new ArrayList<>();
+
+    // Enqueue work
+    static void enqueue(WorkItem item) {
+
+        backlog.add(item);
+        enqueued++;
+
+        System.out.println("Work " + item.id + " enqueued.");
+    }
+
+    // Process work with constraints
+    static void process(WorkItem item, DeviceState device) {
+
+        System.out.println("\nChecking Work ID: " + item.id);
+
+        System.out.println("Battery: " +
+                (device.batteryGood ? "GOOD" : "LOW"));
+
+        System.out.println("Network: " +
+                (device.networkAvailable ? "AVAILABLE" : "UNAVAILABLE"));
+
+        System.out.println("Permission: " +
+                (device.permissionGranted ? "GRANTED" : "REVOKED"));
+
+        if (!device.permissionGranted) {
+
+            cancelled++;
+
+            System.out.println("Work cancelled: Permission revoked.");
+            return;
+        }
+
+        if (!device.batteryGood || !device.networkAvailable) {
+
+            deferred++;
+
+            System.out.println("Work deferred due to constraints.");
+            return;
+        }
+
+        activeWorkers++;
+
+        maxConcurrent = Math.max(maxConcurrent, activeWorkers);
+
+        // Simulate upload
+        System.out.println("Uploading Work " + item.id + "...");
+
+        item.completed = true;
+        successful++;
+
+        activeWorkers--;
+
+        System.out.println("Upload successful.");
+    }
+
+    // FIFO scheduling
+    static void fifoScheduling(DeviceState device) {
+
+        System.out.println("\n===== FIFO SCHEDULING =====");
+
+        for (WorkItem item : backlog) {
+
+            if (!item.completed) {
+                process(item, device);
+            }
+        }
+    }
+
+    // Priority scheduling
+    static void priorityScheduling(DeviceState device) {
+
+        System.out.println("\n===== PRIORITY SCHEDULING =====");
+
+        List<WorkItem> sorted = new ArrayList<>(backlog);
+
+        // Critical work first, then higher priority
+        sorted.sort((a, b) -> {
+            if (a.critical != b.critical) {
+                return Boolean.compare(b.critical, a.critical);
+            }
+            return Integer.compare(b.priority, a.priority);
+        });
+
+        for (WorkItem item : sorted) {
+
+            if (!item.completed) {
+                process(item, device);
+            }
+        }
+    }
+
+    // Display measurements
+    static void report() {
+
+        System.out.println("\n===== FINAL REPORT =====");
+
+        System.out.println("Total enqueued: " + enqueued);
+        System.out.println("Deferred: " + deferred);
+        System.out.println("Cancelled: " + cancelled);
+        System.out.println("Successful uploads: " + successful);
+        System.out.println("Maximum concurrent workers: "
+                + maxConcurrent);
+
+        int remaining = 0;
+
+        for (WorkItem item : backlog) {
+            if (!item.completed) {
+                remaining++;
+            }
+        }
+
+        System.out.println("Residual backlog: " + remaining);
+
+        if (remaining == 0) {
+            System.out.println("Final outcome: All work delivered.");
+        } else {
+            System.out.println("Final outcome: Work remains pending.");
+        }
+    }
+
+    // Reset measurements
+    static void reset() {
+
+        enqueued = 0;
+        deferred = 0;
+        cancelled = 0;
+        successful = 0;
+        maxConcurrent = 0;
+        activeWorkers = 0;
+
+        backlog.clear();
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println("BACKGROUND WORK MANAGER SIMULATION");
+
+        // Create work items
+        enqueue(new WorkItem(1, 2, false));
+        enqueue(new WorkItem(2, 9, true));
+        enqueue(new WorkItem(3, 5, false));
+        enqueue(new WorkItem(4, 10, true));
+        enqueue(new WorkItem(5, 3, false));
+
+        // Scenario 1: Good connectivity and battery
+        System.out.println("\nSCENARIO 1: GOOD CONDITIONS");
+
+        DeviceState good =
+                new DeviceState(true, true, true);
+
+        fifoScheduling(good);
+
+        report();
+
+        // Scenario 2: Low battery
+        reset();
+
+        enqueue(new WorkItem(1, 2, false));
+        enqueue(new WorkItem(2, 9, true));
+        enqueue(new WorkItem(3, 5, false));
+
+        System.out.println("\nSCENARIO 2: LOW BATTERY");
+
+        DeviceState lowBattery =
+                new DeviceState(false, true, true);
+
+        fifoScheduling(lowBattery);
+
+        report();
+
+        // Scenario 3: Permission revoked
+        reset();
+
+        enqueue(new WorkItem(1, 8, true));
+        enqueue(new WorkItem(2, 5, false));
+
+        System.out.println("\nSCENARIO 3: PERMISSION REVOKED");
+
+        DeviceState revoked =
+                new DeviceState(true, true, false);
+
+        fifoScheduling(revoked);
+
+        report();
+
+        // Scenario 4: Priority scheduling
+        reset();
+
+        enqueue(new WorkItem(1, 2, false));
+        enqueue(new WorkItem(2, 9, true));
+        enqueue(new WorkItem(3, 5, false));
+        enqueue(new WorkItem(4, 10, true));
+        enqueue(new WorkItem(5, 3, false));
+
+        System.out.println("\nSCENARIO 4: PRIORITY SCHEDULING");
+
+        priorityScheduling(good);
+
+        report();
+
+        // Scenario 5: Scheduling time comparison
+        System.out.println("\nSCENARIO 5: PERFORMANCE COMPARISON");
+
+        int n = 10000;
+
+        List<WorkItem> test = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            test.add(new WorkItem(
+                    i, i % 10, i % 5 == 0));
+        }
+
+        long start = System.nanoTime();
+
+        for (WorkItem item : test) {
+            int id = item.id;
+        }
+
+        long fifoTime = System.nanoTime() - start;
+
+        start = System.nanoTime();
+
+        test.sort((a, b) -> {
+            if (a.critical != b.critical) {
+                return Boolean.compare(b.critical, a.critical);
+            }
+            return Integer.compare(b.priority, a.priority);
+        });
+
+        long priorityTime = System.nanoTime() - start;
+
+        System.out.println("Number of work items: " + n);
+
+        System.out.println("FIFO scheduling time: "
+                + fifoTime / 1_000_000.0 + " ms");
+
+        System.out.println("Priority scheduling time: "
+                + priorityTime / 1_000_000.0 + " ms");
+    }
+}
