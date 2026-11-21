@@ -1,0 +1,136 @@
+
+import java.util.*;
+
+class Wallet {
+
+    int id;
+    double balance;
+
+    Wallet(int id, double balance) {
+        this.id = id;
+        this.balance = balance;
+    }
+}
+
+public class Main {
+
+    static Wallet wallet1 = new Wallet(1, 5000);
+    static Wallet wallet2 = new Wallet(2, 3000);
+
+    // Transaction simulation
+    static void transfer(int fromId, int toId, double amount) {
+
+        double oldBalance1 = wallet1.balance;
+        double oldBalance2 = wallet2.balance;
+
+        try {
+
+            if (amount <= 0) {
+                throw new Exception("Invalid transfer amount.");
+            }
+
+            if (wallet1.id != fromId || wallet2.id != toId) {
+                throw new Exception("Wallet not found.");
+            }
+
+            if (wallet1.balance < amount) {
+                throw new Exception("Insufficient balance.");
+            }
+
+            // Deduct money
+            wallet1.balance -= amount;
+
+            System.out.println("Amount deducted: " + amount);
+
+            // Add money
+            wallet2.balance += amount;
+
+            System.out.println("Amount credited: " + amount);
+
+            // Commit
+            System.out.println("Transaction committed successfully.");
+
+        } catch (Exception e) {
+
+            // Rollback
+            wallet1.balance = oldBalance1;
+            wallet2.balance = oldBalance2;
+
+            System.out.println("Transaction failed.");
+            System.out.println("Rollback completed.");
+            System.out.println("Reason: " + e.getMessage());
+        }
+    }
+
+    // Unsafe login demonstration
+    static boolean unsafeLogin(String id, String pwd) {
+
+        String sql =
+            "SELECT * FROM users WHERE id='" +
+            id + "' AND pwd='" + pwd + "'";
+
+        System.out.println("\nUnsafe SQL:");
+        System.out.println(sql);
+
+        // Demonstration of the unsafe condition
+        if (id.equals("admin' OR '1'='1")) {
+            return true;
+        }
+
+        return id.equals("admin") && pwd.equals("secret");
+    }
+
+    // Safe login demonstration
+    static boolean safeLogin(String id, String pwd) {
+
+        // PreparedStatement treats input as parameter values.
+        String sql =
+            "SELECT * FROM users WHERE id=? AND pwd=?";
+
+        System.out.println("\nSafe SQL:");
+        System.out.println(sql);
+
+        // Simulated parameter matching
+        return id.equals("admin") && pwd.equals("secret");
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println("INITIAL WALLET BALANCES");
+
+        System.out.println("Hostel Wallet: " + wallet1.balance);
+        System.out.println("Canteen Wallet: " + wallet2.balance);
+
+        // Successful transaction
+        System.out.println("\nSUCCESSFUL TRANSFER");
+
+        transfer(1, 2, 500);
+
+        System.out.println("Hostel Wallet: " + wallet1.balance);
+        System.out.println("Canteen Wallet: " + wallet2.balance);
+
+        // Failed transaction
+        System.out.println("\nFAILED TRANSFER");
+
+        transfer(1, 2, 10000);
+
+        System.out.println("Hostel Wallet: " + wallet1.balance);
+        System.out.println("Canteen Wallet: " + wallet2.balance);
+
+        // Login testing
+        System.out.println("\nSQL INJECTION TEST");
+
+        String id = "admin' OR '1'='1";
+        String pwd = "wrongpassword";
+
+        System.out.println(
+            "Unsafe Login: " +
+            (unsafeLogin(id, pwd) ? "Accepted" : "Rejected")
+        );
+
+        System.out.println(
+            "Safe Login: " +
+            (safeLogin(id, pwd) ? "Accepted" : "Rejected")
+        );
+    }
+}
