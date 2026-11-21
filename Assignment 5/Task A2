@@ -1,0 +1,92 @@
+import java.io.*;
+
+public class BufferedLineCounter {
+
+    static final String FILE =
+        System.getProperty("java.io.tmpdir")
+        + File.separator + "attendance.txt";
+
+    // Create attendance file
+    static void createFile() throws IOException {
+
+        try (BufferedWriter bw =
+                new BufferedWriter(new FileWriter(FILE))) {
+
+            for (int i = 1; i <= 1000; i++) {
+                bw.write("Student " + i + " - Present");
+                bw.newLine();
+            }
+        }
+
+        System.out.println("Attendance file created successfully.");
+    }
+
+    // Unbuffered reading
+    static long unbufferedCount() throws IOException {
+
+        long lines = 0;
+
+        try (FileInputStream fis =
+                new FileInputStream(FILE)) {
+
+            int data;
+
+            while ((data = fis.read()) != -1) {
+                if (data == '\n') {
+                    lines++;
+                }
+            }
+        }
+
+        return lines;
+    }
+
+    // Buffered reading
+    static long bufferedCount() throws IOException {
+
+        long lines = 0;
+
+        try (BufferedInputStream bis =
+                new BufferedInputStream(
+                        new FileInputStream(FILE))) {
+
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = bis.read(buffer)) != -1) {
+
+                for (int i = 0; i < bytesRead; i++) {
+                    if (buffer[i] == '\n') {
+                        lines++;
+                    }
+                }
+            }
+        }
+
+        return lines;
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        createFile();
+
+        long start = System.nanoTime();
+        long count1 = unbufferedCount();
+        long time1 = System.nanoTime() - start;
+
+        start = System.nanoTime();
+        long count2 = bufferedCount();
+        long time2 = System.nanoTime() - start;
+
+        System.out.println("\nUnbuffered lines: " + count1);
+        System.out.println("Buffered lines: " + count2);
+
+        System.out.println("Unbuffered time: "
+                + time1 / 1_000_000.0 + " ms");
+
+        System.out.println("Buffered time: "
+                + time2 / 1_000_000.0 + " ms");
+
+        System.out.println("\nFile location: " + FILE);
+    }
+}
