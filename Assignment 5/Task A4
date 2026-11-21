@@ -1,0 +1,138 @@
+
+import java.io.*;
+import java.util.*;
+
+class Resident implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    String name;
+    String registerNumber;
+
+    transient String password;
+    transient java.sql.Connection connection;
+
+    String phoneNumber;
+
+    Resident(String name, String registerNumber,
+             String password, String phoneNumber) {
+
+        this.name = name;
+        this.registerNumber = registerNumber;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String toString() {
+
+        return "Name: " + name +
+               ", Register Number: " + registerNumber +
+               ", Phone: " + phoneNumber;
+    }
+}
+
+class Room implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    int roomNumber;
+
+    ArrayList<Resident> residents = new ArrayList<>();
+
+    Room(int roomNumber) {
+        this.roomNumber = roomNumber;
+    }
+}
+
+class Hostel implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    ArrayList<Room> rooms = new ArrayList<>();
+
+    void save(String filename) throws IOException {
+
+        try (ObjectOutputStream out =
+                new ObjectOutputStream(
+                    new FileOutputStream(filename))) {
+
+            out.writeObject(this);
+
+            System.out.println("Hostel data saved successfully.");
+        }
+    }
+
+    static Hostel load(String filename)
+            throws IOException, ClassNotFoundException {
+
+        try (ObjectInputStream in =
+                new ObjectInputStream(
+                    new FileInputStream(filename))) {
+
+            return (Hostel) in.readObject();
+        }
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        String filename =
+            System.getProperty("java.io.tmpdir")
+            + File.separator + "hostel.dat";
+
+        try {
+
+            // Create hostel
+            Hostel hostel = new Hostel();
+
+            // Create room
+            Room room1 = new Room(101);
+
+            // Add residents
+            room1.residents.add(
+                new Resident("Arun", "192311001",
+                             "secret123", "9876543210")
+            );
+
+            room1.residents.add(
+                new Resident("Divya", "192311002",
+                             "password456", "9876543211")
+            );
+
+            hostel.rooms.add(room1);
+
+            // Serialize hostel
+            hostel.save(filename);
+
+            // Deserialize hostel
+            Hostel loadedHostel = Hostel.load(filename);
+
+            System.out.println("\nLoaded Hostel Details:");
+
+            for (Room room : loadedHostel.rooms) {
+
+                System.out.println(
+                    "\nRoom Number: " + room.roomNumber
+                );
+
+                for (Resident resident : room.residents) {
+
+                    System.out.println(resident);
+
+                    System.out.println(
+                        "Password after loading: "
+                        + resident.password
+                    );
+                }
+            }
+
+            System.out.println("\nSerialization completed.");
+
+        } catch (IOException | ClassNotFoundException e) {
+
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
